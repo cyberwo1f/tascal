@@ -1,0 +1,66 @@
+/* ============================================================
+   デザイントークン
+   プロトタイプ（ToDoアプリ.dc.html）の CSS 変数を厳密に移植。
+   ダーク（既定）と [data-theme="light"] の 2 テーマを定義する。
+   ============================================================ */
+
+:root {
+  /* --- サーフェス（暗いほど奥） --- */
+  --bg: #14161b;
+  --sidebar: #1a1d24;
+  --surface: #21252e;
+  --surface-2: #262b35;
+
+  /* --- 境界線 --- */
+  --border: rgba(255, 255, 255, 0.07);
+  --border-2: rgba(255, 255, 255, 0.12);
+
+  /* --- テキスト --- */
+  --text: #e9ebf2;
+  --muted: #8a90a1;
+  --faint: #5d6373;
+
+  /* --- アクセント --- */
+  --accent: #5b8def;
+  --accent-soft: rgba(91, 141, 239, 0.16);
+  --accent2: #42d3a8;
+  --accent2-soft: rgba(66, 211, 168, 0.14);
+
+  /* --- 優先度 --- */
+  --p-high: #f2796d;
+  --p-med: #f0b95b;
+  --p-low: #7d8597;
+
+  /* --- 形状・余白 --- */
+  --radius: 14px;
+  --row-pad: 13px; /* 密度: compact 9px / comfortable 13px / roomy 18px */
+
+  /* アクセント上に乗せる前景色（明るいアクセントなので濃色を使う） */
+  --on-accent: #0c1016;
+}
+
+/* ライトテーマ：サーフェスとテキストのみ差し替え、アクセント/優先度は共通 */
+:root[data-theme='light'] {
+  --bg: #f4f5f8;
+  --sidebar: #ebedf2;
+  --surface: #ffffff;
+  --surface-2: #f1f3f7;
+
+  --border: rgba(18, 22, 31, 0.09);
+  --border-2: rgba(18, 22, 31, 0.16);
+
+  --text: #1b1e26;
+  --muted: #6b7180;
+  --faint: #a6abb8;
+
+  /* ライトでは薄背景をやや弱める（プロトタイプの hexA(acc, 0.12) 相当） */
+  --accent-soft: rgba(91, 141, 239, 0.12);
+}
+
+/* 密度バリエーション（必要に応じて :root に付与して切り替え可能） */
+:root[data-density='compact'] {
+  --row-pad: 9px;
+}
+:root[data-density='roomy'] {
+  --row-pad: 18px;
+}

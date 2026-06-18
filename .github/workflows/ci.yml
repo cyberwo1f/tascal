@@ -1,0 +1,33 @@
+# CI: 型チェック＋本番ビルドの再現性を担保する。
+# ホスティングは GitHub Actions を想定（他 CI でも手順は同じ：corepack 有効化 → frozen install → build）。
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # package.json の packageManager フィールドに固定した pnpm を有効化
+      - name: Enable Corepack
+        run: corepack enable
+
+      # .nvmrc の Node を使い、pnpm ストアをキャッシュ
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      # ロックファイルを厳守（差分があれば失敗させ、再現性を担保）
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      # tsc --noEmit && vite build（型チェックを内包）
+      - name: Build
+        run: pnpm run build
