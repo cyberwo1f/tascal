@@ -15,9 +15,9 @@
 
 - **M0 = プロトタイプ実装が完了**：クライアント完結の ToDo SPA（`src/`、`localStorage` のみ）。
   これが Tascal の出発点。**段階拡張**で進める（Q-STRAT-1 決定、[`docs/roadmap.md`](./docs/roadmap.md)）。
-- **M1（Electron 化）= 🟡 進行中**：現状維持＋ `electron/` 追加の最小構成を実装済み（[ADR-0002](./docs/adr/0002-electron-in-place.md)）。
+- **M1（Electron 化）= ✅ 完了（2026-06-20）**：現状維持＋ `electron/` 追加の最小構成を実装済み（[ADR-0002](./docs/adr/0002-electron-in-place.md)）。
   Web/デスクトップ双方のビルドと未署名 `.app` 生成を確認。責務境界・IPC 方針は [`docs/desktop.md`](./docs/desktop.md)。
-  **GUI 起動の最終確認はユーザー手元で `pnpm dev:electron`**。次は M4（コミットメント可視化）。
+  **GUI 起動の最終確認（`pnpm dev:electron`）をユーザー手元で完了**し、完了条件を全充足。次は M4（コミットメント可視化）。
 - **保留中**：マルチユーザー（M2）とホスト型 AI（M3）は「Web サービス展開」を判断してから。
 
 ### 確定した方針（2026-06-18）
@@ -61,6 +61,8 @@ corepack enable                # 初回のみ
 pnpm install                   # 依存インストール
 pnpm dev                       # Web 開発サーバー（ブラウザ）
 pnpm dev:electron              # Vite + Electron を同時起動（デスクトップ開発）
+pnpm overview                  # docs/overview.html を Vite で配信（http://127.0.0.1:5180/overview.html・保存で自動リロード）
+                               #   --host で全IF(IPv4/IPv6)にバインド＝Superset 等の内蔵ブラウザから到達可。自動でブラウザは開かない
 pnpm build                     # 型チェック（レンダラ＋electron）+ Web 本番ビルド
 pnpm build:electron            # メイン/プリロードを dist-electron/ へバンドル
 pnpm dist:electron             # 配布ビルド（release/ に未署名アプリを生成）

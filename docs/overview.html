@@ -8,7 +8,7 @@
   原典は docs/ 配下の各 .md。このファイルは docs の内容を要約・可視化した独立 HTML。
   リポジトリ内で完結して管理する（外部ホスティングへの再デプロイは行わない）。
   ブラウザで直接開ける。docs を更新したら、このファイルの該当箇所と下記「最終更新」も更新すること。
-  最終更新: 2026-06-19
+  最終更新: 2026-06-20
 -->
 <title>Tascal ドキュメント・オーバービュー</title>
 <style>
@@ -431,7 +431,7 @@
     <a class="nav-btn" href="#docs"><span class="nav-dot" style="background:var(--p-med)"></span><span class="nav-text">ドキュメント索引</span></a>
 
     <div class="sidebar-foot">
-      docs/ の要約ビュー<br>最終更新 2026-06-19
+      docs/ の要約ビュー<br>最終更新 2026-06-20
     </div>
   </aside>
 
@@ -455,11 +455,11 @@
       <div class="status-strip">
         <div class="status-card">
           <div class="k">現在地</div>
-          <div class="v"><span class="badge b-done">✓ 完了</span> M0 プロトタイプ稼働中</div>
+          <div class="v"><span class="badge b-done">✓ 完了</span> M0・M1 完了（Web/Electron 起動確認）</div>
         </div>
         <div class="status-card">
           <div class="k">次の主戦場（実装順）</div>
-          <div class="v seq"><span class="m">M1</span><span class="arr">→</span><span class="m">M4</span><span class="arr">→</span><span class="m">M3</span></div>
+          <div class="v seq"><span class="m">M4</span><span class="arr">→</span><span class="m">M3</span></div>
         </div>
         <div class="status-card">
           <div class="k">永続化</div>
@@ -513,15 +513,15 @@
       </div>
 
       <div class="ring-wrap">
-        <svg width="64" height="64" viewBox="0 0 80 80" aria-label="マイルストーン進捗 1/8">
+        <svg width="64" height="64" viewBox="0 0 80 80" aria-label="マイルストーン進捗 2/8">
           <circle cx="40" cy="40" r="34" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="8"></circle>
           <circle id="rmRing" cx="40" cy="40" r="34" fill="none" stroke="var(--accent2)" stroke-width="8"
                   stroke-linecap="round" transform="rotate(-90 40 40)"
                   stroke-dasharray="213.6" stroke-dashoffset="213.6"></circle>
         </svg>
         <div class="ring-txt">
-          <div class="big">1 / 8 完了</div>
-          <div class="sm">M0 のみ完了。設計フェーズ進行中。</div>
+          <div class="big">2 / 8 完了</div>
+          <div class="sm">M0・M1 完了。M4（コミット可視化）に着手可。</div>
         </div>
       </div>
 
@@ -540,10 +540,10 @@
         <div class="ms-id">M1<small>安定ID</small></div>
         <div>
           <p class="ms-title">基盤整備（Electron 化含む）</p>
-          <p class="ms-goal">同一コードから Web とデスクトップ（Electron）を起動・ビルドできる土台。テスト基盤（Vitest / Playwright）導入。</p>
-          <p class="ms-meta">依存: Q-ARCH-1 ✅ / 4 / 5</p>
+          <p class="ms-goal">同一コードから Web とデスクトップ（Electron）を起動・ビルドできる土台。テスト基盤（Vitest / Playwright）導入。GUI 起動を 2026-06-20 にユーザー手元で確認し完了条件を全充足。</p>
+          <p class="ms-meta">依存: Q-ARCH-1 ✅ / 4 ✅ / 5 ✅</p>
         </div>
-        <div class="ms-right"><span class="badge b-todo">⬜ 次の主戦場</span></div>
+        <div class="ms-right"><span class="badge b-done">✓ 完了</span></div>
       </div>
 
       <div class="ms">
@@ -854,7 +854,7 @@ Commitment {
 
       <div class="foot">
         このページは <code>docs/</code> 配下の Markdown を人間が把握しやすいよう要約・可視化した自動生成ビューです。正は各 <code>.md</code>。<br>
-        ソース: <code>docs/overview.html</code> ・ 最終更新 2026-06-19。docs を更新したら本ビューも更新します。
+        ソース: <code>docs/overview.html</code> ・ 最終更新 2026-06-20。docs を更新したら本ビューも更新します。
       </div>
     </section>
 
@@ -865,10 +865,10 @@ Commitment {
 (function () {
   var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  /* ---- 達成リング（1/8 = 12.5%） ---- */
+  /* ---- 達成リング（2/8 = 25%） ---- */
   var ring = document.getElementById('rmRing');
   if (ring) {
-    var C = 213.6, target = C * (1 - 0.125);
+    var C = 213.6, target = C * (1 - 0.25);
     if (reduce) {
       ring.style.strokeDashoffset = target;
     } else {

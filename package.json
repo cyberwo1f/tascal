@@ -14,6 +14,7 @@
   "scripts": {
     "dev": "vite",
     "dev:electron": "pnpm build:electron && concurrently -k -n vite,electron \"vite\" \"wait-on http://localhost:5173 && electron .\"",
+    "overview": "vite docs --host --port 5180 --strictPort",
     "build": "pnpm typecheck && vite build",
     "build:electron": "esbuild electron/main.ts --bundle --platform=node --external:electron --format=cjs --outfile=dist-electron/main.cjs && esbuild electron/preload.ts --bundle --platform=node --external:electron --format=cjs --outfile=dist-electron/preload.cjs",
     "dist:electron": "pnpm build && pnpm build:electron && electron-builder --publish never",
