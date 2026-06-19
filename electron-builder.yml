@@ -1,0 +1,19 @@
+# Electron 配布ビルド設定（M1 は「最小ビルドが生成できる」ことが目標）。
+# 署名・自動更新・各 OS インストーラの作り込みは M5 以降（Q-ARCH-6）。
+appId: jp.tascal.app
+productName: Tascal
+directories:
+  output: release
+files:
+  - dist/**            # Vite ビルド成果物（レンダラ）
+  - dist-electron/**   # esbuild 成果物（メイン / プリロード）
+  - package.json
+# M1 では署名しない最小構成。mac は未署名の .app（dir）を生成する。
+mac:
+  target: dir
+  identity: null
+  category: public.app-category.productivity
+win:
+  target: dir
+linux:
+  target: dir

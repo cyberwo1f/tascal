@@ -27,6 +27,8 @@ Claude Design で作成したプロトタイプ（`ToDoアプリ.dc.html`）を�
 - 状態管理: React Context（`src/store.tsx`）
 - スタイル: 素の CSS ＋ CSS カスタムプロパティ（デザイントークン）
 - 永続化: `localStorage`（キー: `tascal.v1`）
+- デスクトップ: **Electron**（メイン/プリロードは `electron/`。esbuild でバンドル、配布は electron-builder）。詳細は [`docs/desktop.md`](./docs/desktop.md)
+- テスト: **Vitest**（純粋ロジックのユニット）＋ **Playwright**（Web スモーク雛形）
 
 ## セットアップ
 
@@ -38,14 +40,18 @@ corepack enable            # 一度だけ（pnpm のバージョンを固定運�
 nvm use                    # .nvmrc の Node LTS に合わせる（任意）
 
 pnpm install               # 依存関係のインストール
-pnpm dev                   # 開発サーバー（http://localhost:5173）
-pnpm build                 # 型チェック＋本番ビルド（dist/）
+pnpm dev                   # Web 開発サーバー（http://localhost:5173）
+pnpm dev:electron          # Vite + Electron を同時起動（デスクトップ開発）
+pnpm build                 # 型チェック（レンダラ＋electron）＋ Web 本番ビルド（dist/）
+pnpm dist:electron         # 配布ビルド（release/ に未署名アプリを生成）
 pnpm preview               # ビルド結果のプレビュー
 pnpm typecheck             # 型チェックのみ
+pnpm test                  # Vitest ユニットテスト
+pnpm test:e2e              # Playwright（初回のみ pnpm exec playwright install chromium）
 ```
 
 > CI では再現性のため `pnpm install --frozen-lockfile` を使います（`.github/workflows/ci.yml`）。
-> 将来 API を追加する場合は `pnpm-workspace.yaml` を足してワークスペース化できます。
+> 将来 backend/server もしくは 2 つ目の UI 消費者を足すタイミングで `pnpm-workspace.yaml` を足してワークスペース化します（[ADR-0002](./docs/adr/0002-electron-in-place.md)）。
 
 ## ディレクトリ構成
 

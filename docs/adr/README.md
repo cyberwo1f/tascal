@@ -10,3 +10,4 @@
 
 ## 一覧
 - [ADR-0001: コミットメントを第一級エンティティとして表現する](./0001-commitment-model.md)（2026-06-19・Q-PROD-2）
+- [ADR-0002: M1 の Electron 化は「現状維持＋ electron/ 追加」で行い、モノレポ化は後ろ倒しする](./0002-electron-in-place.md)（2026-06-19・Q-ARCH-5）

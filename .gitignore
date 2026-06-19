@@ -9,7 +9,15 @@ node_modules
 # ビルド成果物
 dist
 dist-ssr
+dist-electron
+release
 *.local
+
+# テスト成果物（Playwright）
+/test-results
+/playwright-report
+/blob-report
+.playwright
 
 # ログ
 logs

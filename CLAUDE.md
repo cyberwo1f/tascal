@@ -15,7 +15,9 @@
 
 - **M0 = プロトタイプ実装が完了**：クライアント完結の ToDo SPA（`src/`、`localStorage` のみ）。
   これが Tascal の出発点。**段階拡張**で進める（Q-STRAT-1 決定、[`docs/roadmap.md`](./docs/roadmap.md)）。
-- **次の主戦場 = M1（Electron 化）→ M4（コミットメント可視化）**。どちらもローカルで実装できる。
+- **M1（Electron 化）= 🟡 進行中**：現状維持＋ `electron/` 追加の最小構成を実装済み（[ADR-0002](./docs/adr/0002-electron-in-place.md)）。
+  Web/デスクトップ双方のビルドと未署名 `.app` 生成を確認。責務境界・IPC 方針は [`docs/desktop.md`](./docs/desktop.md)。
+  **GUI 起動の最終確認はユーザー手元で `pnpm dev:electron`**。次は M4（コミットメント可視化）。
 - **保留中**：マルチユーザー（M2）とホスト型 AI（M3）は「Web サービス展開」を判断してから。
 
 ### 確定した方針（2026-06-18）
@@ -45,19 +47,26 @@
 | 状態管理 | React Context（`src/store.tsx`）※スケール時は段階導入を検討（Q-ARCH-4） |
 | スタイル | 素の CSS + CSS カスタムプロパティ（デザイントークン）。[`DESIGN.md`](./DESIGN.md) |
 | 永続化（現状） | `localStorage`（キー `tascal.v1`）。当面ローカル継続 |
-| デスクトップ | **Electron**（M1 で導入予定）。レンダラ=Web、メイン=Node（キー等の安全な実行層） |
-| CI | GitHub Actions：`pnpm install --frozen-lockfile` → `pnpm build` |
+| デスクトップ | **Electron**（M1 で導入済み・最小構成）。レンダラ=Web（`src/`）、メイン=Node（`electron/`、安全な実行層）。[`docs/desktop.md`](./docs/desktop.md) |
+| メイン/プリロードのビルド | **esbuild** で `.cjs` へバンドル（`dist-electron/`）。配布は **electron-builder**（M1 は未署名 `dir`） |
+| テスト | **Vitest**（純粋ロジックのユニット）＋ **Playwright**（Web スモーク雛形） |
+| CI | GitHub Actions：`pnpm install --frozen-lockfile` → `pnpm build`（型チェックはレンダラ＋electron 両方） |
 
-データ基盤（BaaS/自前API）・モノレポ化のタイミングは Web 展開判断後（[`docs/architecture.md`](./docs/architecture.md)）。
+データ基盤（BaaS/自前API）・モノレポ化のタイミングは「backend/server もしくは 2 つ目の UI 消費者の追加時」まで後ろ倒し（Q-ARCH-5 / [ADR-0002](./docs/adr/0002-electron-in-place.md)、[`docs/architecture.md`](./docs/architecture.md)）。
 
 ## コマンド
 
 ```bash
 corepack enable                # 初回のみ
 pnpm install                   # 依存インストール
-pnpm dev                       # 開発サーバー
-pnpm build                     # 型チェック + 本番ビルド
+pnpm dev                       # Web 開発サーバー（ブラウザ）
+pnpm dev:electron              # Vite + Electron を同時起動（デスクトップ開発）
+pnpm build                     # 型チェック（レンダラ＋electron）+ Web 本番ビルド
+pnpm build:electron            # メイン/プリロードを dist-electron/ へバンドル
+pnpm dist:electron             # 配布ビルド（release/ に未署名アプリを生成）
 pnpm typecheck                 # 型チェックのみ
+pnpm test                      # Vitest ユニットテスト
+pnpm test:e2e                  # Playwright（初回のみ pnpm exec playwright install chromium）
 ```
 
 ## リポジトリ構成（現状）
@@ -67,14 +76,18 @@ pnpm typecheck                 # 型チェックのみ
 ├── CLAUDE.md            # このファイル
 ├── DESIGN.md            # デザインシステム
 ├── README.md           # 使い方
-├── docs/               # 仕様・ロードマップ・未決事項（実装の拠り所）
-├── src/                # 現プロトタイプ実装
+├── docs/               # 仕様・ロードマップ・未決事項（実装の拠り所）。desktop.md にデスクトップ責務
+├── src/                # レンダラ（現プロトタイプ。Web と共通）
 │   ├── components/      # UI コンポーネント
-│   ├── lib/            # 純粋ユーティリティ（date / priority / color / id / storage）
+│   ├── lib/            # 純粋ユーティリティ（date / priority / color / id / storage）＋ *.test.ts
 │   ├── data/seed.ts    # 初期サンプルデータ
 │   ├── store.tsx       # 状態 + アクション + 永続化
 │   ├── selectors.ts    # 表示用の派生データ計算
+│   ├── desktop.d.ts    # window.tascal（preload 公開 API）の型
 │   └── styles/         # tokens / base / app の CSS
+├── electron/           # Electron メイン/プリロード（+ 専用 tsconfig）
+├── electron-builder.yml # 配布ビルド設定（M1 は未署名 dir）
+├── e2e/                # Playwright スモーク
 └── .github/workflows/  # CI
 ```
 
