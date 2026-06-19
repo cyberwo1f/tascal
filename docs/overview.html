@@ -1,0 +1,953 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--
+  Tascal ドキュメント・オーバービュー（docs/ の可視化ビュー）
+  原典は docs/ 配下の各 .md。このファイルは docs の内容を要約・可視化した独立 HTML。
+  リポジトリ内で完結して管理する（外部ホスティングへの再デプロイは行わない）。
+  ブラウザで直接開ける。docs を更新したら、このファイルの該当箇所と下記「最終更新」も更新すること。
+  最終更新: 2026-06-19
+-->
+<title>Tascal ドキュメント・オーバービュー</title>
+<style>
+  :root {
+    /* DESIGN.md のトークンをそのまま採用（ダーク） */
+    --bg: #14161b;
+    --sidebar: #1a1d24;
+    --surface: #21252e;
+    --surface-2: #262b35;
+    --border: rgba(255,255,255,.07);
+    --border-2: rgba(255,255,255,.12);
+    --text: #e9ebf2;
+    --muted: #8a90a1;
+    --faint: #5d6373;
+    --accent: #5b8def;
+    --accent-soft: rgba(91,141,239,.16);
+    --accent2: #42d3a8;
+    --accent2-soft: rgba(66,211,168,.14);
+    --p-high: #f2796d;
+    --p-med: #f0b95b;
+    --p-low: #7d8597;
+    --purple: #c08bf0;
+    --cyan: #5ed3e0;
+    --on-accent: #0c1016;
+    --radius: 14px;
+    --font: 'Manrope', system-ui, -apple-system, 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+    --mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+    --sidebar-w: 256px;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body { margin: 0; padding: 0; background: var(--bg); }
+
+  html { scroll-behavior: smooth; }
+
+  .page {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 14px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    letter-spacing: -0.005em;
+  }
+
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* ---------- レイアウト ---------- */
+  .layout {
+    display: grid;
+    grid-template-columns: var(--sidebar-w) minmax(0, 1fr);
+    min-height: 100vh;
+  }
+
+  /* ---------- サイドバー（Tascal の nav を踏襲） ---------- */
+  .sidebar {
+    position: sticky;
+    top: 0;
+    align-self: start;
+    height: 100vh;
+    overflow-y: auto;
+    background: var(--sidebar);
+    border-right: 1px solid var(--border);
+    padding: 22px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding: 4px 8px 16px;
+  }
+  .brand-mark {
+    width: 34px; height: 34px;
+    flex: 0 0 34px;
+    border-radius: 10px;
+    background: radial-gradient(120% 120% at 30% 25%, #2a3344, #171a21);
+    border: 1px solid var(--border-2);
+  }
+  .brand-name { font-size: 17px; font-weight: 800; letter-spacing: -0.02em; }
+  .brand-sub { font-size: 11px; color: var(--faint); font-weight: 600; }
+
+  .nav-label {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--faint);
+    padding: 14px 8px 6px;
+  }
+
+  .nav-btn {
+    display: flex; align-items: center; gap: 11px;
+    padding: 9px 10px;
+    border-radius: 10px;
+    color: var(--muted);
+    font-size: 13.5px; font-weight: 600;
+    cursor: pointer;
+    border: none; background: transparent; width: 100%; text-align: left;
+    transition: background .14s ease, color .14s ease;
+  }
+  .nav-btn:hover { background: var(--surface); color: var(--text); text-decoration: none; }
+  .nav-btn.is-active { background: var(--surface); color: var(--text); }
+  .nav-dot { width: 9px; height: 9px; border-radius: 50%; flex: 0 0 9px; }
+  .nav-btn .nav-text { flex: 1; }
+  .count-pill {
+    font-size: 11px; font-weight: 700;
+    color: var(--muted);
+    background: var(--surface-2);
+    padding: 1px 8px; border-radius: 8px;
+    min-width: 22px; text-align: center;
+  }
+  .nav-btn.is-active .count-pill { color: var(--text); }
+
+  .sidebar-foot {
+    margin-top: auto;
+    padding: 14px 8px 4px;
+    font-size: 11px; color: var(--faint); font-weight: 600;
+    border-top: 1px solid var(--border);
+  }
+
+  /* ---------- メイン ---------- */
+  main { padding: 0 38px 96px; max-width: 1080px; min-width: 0; }
+
+  section { padding-top: 30px; scroll-margin-top: 18px; }
+
+  .sec-head { display: flex; align-items: baseline; gap: 12px; margin: 6px 0 18px; flex-wrap: wrap; }
+  .sec-eyebrow {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--faint);
+  }
+  h2 { font-size: 24px; font-weight: 800; letter-spacing: -0.025em; margin: 0; }
+  .sec-note { font-size: 13px; color: var(--muted); margin: 0; }
+
+  /* ---------- ヒーロー ---------- */
+  .hero {
+    display: grid;
+    grid-template-columns: minmax(0,1fr) 280px;
+    gap: 34px;
+    align-items: center;
+    padding: 56px 0 22px;
+    border-bottom: 1px solid var(--border);
+  }
+  .hero-eyebrow {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--accent);
+    margin-bottom: 14px;
+  }
+  .hero h1 {
+    font-size: clamp(30px, 4.4vw, 48px);
+    line-height: 1.12;
+    font-weight: 800;
+    letter-spacing: -0.035em;
+    margin: 0 0 16px;
+  }
+  .hero h1 .em { color: var(--accent2); }
+  .hero-lead { font-size: 15.5px; color: var(--muted); margin: 0 0 22px; max-width: 46ch; }
+  .mission {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: var(--accent-soft);
+    border: 1px solid rgba(91,141,239,.3);
+    color: var(--text);
+    padding: 9px 14px; border-radius: 11px;
+    font-size: 13px; font-weight: 600;
+  }
+  .mission b { color: var(--accent); }
+
+  .hero-visual { display: flex; justify-content: center; }
+  #orbit { width: 240px; height: 240px; max-width: 100%; }
+
+  .status-strip {
+    display: flex; flex-wrap: wrap; gap: 10px;
+    margin-top: 26px;
+  }
+  .status-card {
+    flex: 1 1 200px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+  }
+  .status-card .k { font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--faint); }
+  .status-card .v { font-size: 15px; font-weight: 700; margin-top: 4px; }
+  .seq { display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .seq .m { background: var(--surface-2); border: 1px solid var(--border-2); border-radius: 8px; padding: 1px 8px; font-size: 13px; font-weight: 800; }
+  .seq .arr { color: var(--faint); }
+
+  /* ---------- カードグリッド ---------- */
+  .grid { display: grid; gap: 14px; }
+  .grid-2 { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .grid-4 { grid-template-columns: repeat(4, minmax(0,1fr)); }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 17px;
+    min-width: 0;
+    transition: border-color .15s ease;
+  }
+  .card:hover { border-color: var(--border-2); }
+  .card h3 { font-size: 15px; font-weight: 700; letter-spacing: -0.01em; margin: 0 0 7px; }
+  .card p { margin: 0; color: var(--muted); font-size: 13px; }
+
+  .pillar .pnum {
+    font-size: 12px; font-weight: 800; color: var(--on-accent);
+    width: 22px; height: 22px; border-radius: 7px;
+    display: inline-flex; align-items: center; justify-content: center;
+    margin-bottom: 10px;
+  }
+
+  /* ---------- バッジ・ドット ---------- */
+  .badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 11.5px; font-weight: 700;
+    padding: 2px 9px; border-radius: 8px;
+    white-space: nowrap;
+  }
+  .b-done  { background: var(--accent2-soft); color: var(--accent2); }
+  .b-prog  { background: rgba(240,185,91,.16); color: var(--p-med); }
+  .b-open  { background: rgba(242,121,109,.16); color: var(--p-high); }
+  .b-todo  { background: var(--surface-2); color: var(--muted); }
+  .b-pause { background: rgba(91,141,239,.14); color: #90b1f3; }
+  .b-future{ background: var(--surface-2); color: var(--faint); }
+
+  .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; flex: 0 0 9px; }
+  .d-done { background: var(--accent2); }
+  .d-prog { background: var(--p-med); }
+  .d-open { background: var(--p-high); }
+  .d-pause{ background: #90b1f3; }
+  .d-future{ background: var(--faint); }
+
+  .id-chip {
+    font-family: var(--mono);
+    font-size: 12px; font-weight: 700;
+    background: var(--surface-2); border: 1px solid var(--border);
+    color: var(--text);
+    padding: 1px 8px; border-radius: 7px;
+  }
+
+  /* ---------- ロードマップ ---------- */
+  .rm-note {
+    display: flex; gap: 12px; align-items: flex-start;
+    background: var(--accent-soft);
+    border: 1px solid rgba(91,141,239,.28);
+    border-radius: var(--radius);
+    padding: 13px 16px; margin-bottom: 20px;
+    font-size: 13px;
+  }
+  .rm-note .ico { color: var(--accent); font-weight: 800; }
+  .rm-note b { color: var(--text); }
+
+  .phase-label {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--faint);
+    margin: 22px 0 12px;
+  }
+  .phase-label::after { content: ""; flex: 1; height: 1px; background: var(--border); }
+
+  .ms {
+    display: grid;
+    grid-template-columns: 56px minmax(0,1fr) auto;
+    gap: 14px; align-items: start;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 15px 17px; margin-bottom: 10px;
+  }
+  .ms-id {
+    font-size: 19px; font-weight: 800; letter-spacing: -0.02em;
+    color: var(--text);
+  }
+  .ms-id small { display: block; font-size: 10px; font-weight: 700; color: var(--faint); letter-spacing: 0.04em; }
+  .ms-title { font-size: 15px; font-weight: 700; margin: 0 0 3px; }
+  .ms-goal { font-size: 13px; color: var(--muted); margin: 0; }
+  .ms-meta { font-size: 12px; color: var(--faint); margin-top: 7px; }
+  .ms-meta .seqflag { color: var(--accent2); font-weight: 700; }
+  .ms-right { display: flex; flex-direction: column; align-items: flex-end; gap: 7px; }
+
+  .ring-wrap { display: flex; align-items: center; gap: 14px; margin-bottom: 4px; }
+  .ring-wrap .ring-txt .big { font-size: 17px; font-weight: 800; }
+  .ring-wrap .ring-txt .sm { font-size: 12px; color: var(--muted); }
+
+  /* ---------- テーブル ---------- */
+  .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius); }
+  table { border-collapse: collapse; width: 100%; font-size: 13px; min-width: 560px; }
+  th, td { text-align: left; padding: 10px 13px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { font-size: 11px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--faint); background: var(--surface-2); }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: var(--surface); }
+  td .qid { font-family: var(--mono); font-weight: 700; font-size: 12.5px; }
+  .nowrap { white-space: nowrap; }
+
+  /* ---------- 統計タイル ---------- */
+  .stats { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; }
+  .stat {
+    flex: 1 1 120px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 14px 16px;
+  }
+  .stat .num { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; }
+  .stat .lab { font-size: 12px; color: var(--muted); font-weight: 600; display: flex; align-items: center; gap: 7px; }
+
+  /* ---------- ADR / 決定ログ ---------- */
+  .timeline { border-left: 2px solid var(--border); margin-left: 6px; padding-left: 20px; display: flex; flex-direction: column; gap: 14px; }
+  .tl-item { position: relative; }
+  .tl-item::before {
+    content: ""; position: absolute; left: -27px; top: 4px;
+    width: 11px; height: 11px; border-radius: 50%;
+    background: var(--accent); border: 2px solid var(--bg);
+  }
+  .tl-item.minor::before { background: var(--faint); }
+  .tl-date { font-size: 11px; font-weight: 700; color: var(--faint); letter-spacing: 0.04em; }
+  .tl-body { font-size: 13.5px; margin-top: 2px; }
+  .tl-body b { color: var(--text); }
+
+  .adr {
+    background: linear-gradient(180deg, rgba(66,211,168,.06), transparent), var(--surface);
+    border: 1px solid rgba(66,211,168,.28);
+    border-radius: var(--radius);
+    padding: 18px 19px; margin-top: 18px;
+  }
+  .adr h3 { margin: 0 0 4px; font-size: 16px; }
+  .adr .adr-meta { font-size: 12px; color: var(--muted); margin-bottom: 12px; }
+
+  /* ---------- コード / スキーマ ---------- */
+  pre {
+    background: #15181f; border: 1px solid var(--border);
+    border-radius: 12px; padding: 15px 17px; overflow-x: auto;
+    font-family: var(--mono); font-size: 12.5px; line-height: 1.6; color: #cdd3e0;
+    margin: 0;
+  }
+  pre .c { color: var(--faint); }
+  pre .nw { color: var(--accent2); }
+  pre .k { color: var(--accent); }
+
+  ul.clean { margin: 8px 0 0; padding-left: 18px; color: var(--muted); font-size: 13px; }
+  ul.clean li { margin: 3px 0; }
+
+  .callout {
+    display: flex; gap: 12px; align-items: flex-start;
+    background: rgba(240,185,91,.08); border: 1px solid rgba(240,185,91,.28);
+    border-radius: var(--radius); padding: 14px 16px; font-size: 13px;
+  }
+  .callout.star { background: rgba(192,139,240,.08); border-color: rgba(192,139,240,.3); }
+  .callout .ico { font-size: 16px; }
+
+  /* ---------- ドキュメント索引 ---------- */
+  .doc-item {
+    display: grid; grid-template-columns: 200px 1fr; gap: 14px;
+    padding: 12px 0; border-bottom: 1px solid var(--border);
+  }
+  .doc-item:last-child { border-bottom: none; }
+  .doc-path { font-family: var(--mono); font-size: 12.5px; color: var(--accent2); font-weight: 600; }
+  .doc-desc { font-size: 13px; color: var(--muted); }
+
+  .foot { margin-top: 40px; padding-top: 18px; border-top: 1px solid var(--border); font-size: 12px; color: var(--faint); }
+
+  /* ---------- レスポンシブ ---------- */
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: minmax(0, 1fr); }
+    .sidebar {
+      position: sticky; top: 0; height: auto; flex-direction: row;
+      align-items: center; overflow-x: auto; gap: 6px;
+      padding: 10px 12px; z-index: 20;
+    }
+    .brand { padding: 0 8px 0 0; flex: 0 0 auto; }
+    .brand-sub { display: none; }
+    .nav-label, .sidebar-foot { display: none; }
+    .nav-btn { width: auto; white-space: nowrap; flex: 0 0 auto; }
+    .nav-btn .nav-text { flex: 0 0 auto; }
+    .count-pill { display: none; }
+    main { padding: 0 20px 72px; }
+    section { scroll-margin-top: 60px; }
+    .hero { grid-template-columns: minmax(0, 1fr); padding-top: 30px; }
+    .hero-text { min-width: 0; }
+    .hero-visual { order: -1; }
+    #orbit { width: 180px; height: 180px; }
+    .grid-2, .grid-4 { grid-template-columns: minmax(0, 1fr); }
+    .hero h1 { font-size: 30px; }
+    .ms { grid-template-columns: 44px 1fr; }
+    .ms-right { grid-column: 1 / -1; flex-direction: row; align-items: center; }
+    .doc-item { grid-template-columns: 1fr; gap: 3px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    * { transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+<div class="layout">
+
+  <!-- ============ サイドバー ============ -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true"></div>
+      <div>
+        <div class="brand-name">Tascal</div>
+        <div class="brand-sub">ドキュメント・オーバービュー</div>
+      </div>
+    </div>
+
+    <div class="nav-label">セクション</div>
+    <a class="nav-btn" href="#overview"><span class="nav-dot" style="background:var(--accent)"></span><span class="nav-text">概要</span></a>
+    <a class="nav-btn" href="#pillars"><span class="nav-dot" style="background:var(--accent2)"></span><span class="nav-text">4本柱</span></a>
+    <a class="nav-btn" href="#roadmap"><span class="nav-dot" style="background:var(--p-med)"></span><span class="nav-text">ロードマップ</span><span class="count-pill">8</span></a>
+    <a class="nav-btn" href="#questions"><span class="nav-dot" style="background:var(--purple)"></span><span class="nav-text">未決事項</span><span class="count-pill">13</span></a>
+    <a class="nav-btn" href="#decisions"><span class="nav-dot" style="background:var(--p-high)"></span><span class="nav-text">決定ログ・ADR</span></a>
+    <a class="nav-btn" href="#datamodel"><span class="nav-dot" style="background:var(--cyan)"></span><span class="nav-text">データモデル</span></a>
+    <a class="nav-btn" href="#ai"><span class="nav-dot" style="background:var(--accent)"></span><span class="nav-text">AI協働</span></a>
+    <a class="nav-btn" href="#architecture"><span class="nav-dot" style="background:var(--accent2)"></span><span class="nav-text">アーキテクチャ</span></a>
+    <a class="nav-btn" href="#docs"><span class="nav-dot" style="background:var(--p-med)"></span><span class="nav-text">ドキュメント索引</span></a>
+
+    <div class="sidebar-foot">
+      docs/ の要約ビュー<br>最終更新 2026-06-19
+    </div>
+  </aside>
+
+  <!-- ============ メイン ============ -->
+  <main>
+
+    <!-- ===== 概要 ===== -->
+    <section id="overview">
+      <div class="hero">
+        <div class="hero-text">
+          <div class="hero-eyebrow">Product Docs · 2026-06-19 時点</div>
+          <h1>約束（コミットメント）を可視化し、<br><span class="em">AI と協働して守りきる。</span></h1>
+          <p class="hero-lead">一人経営・少人数チームのためのタスク管理ツール。<code>docs/</code> の仕様・決定・未決事項をここで一望し、「いま何が決まっていて、次に何をやるか」をすぐ掴めるようにする。</p>
+          <div class="mission"><b>ミッション</b>&nbsp;AI 格差をなくし、AI をより身近にする。</div>
+        </div>
+        <div class="hero-visual">
+          <canvas id="orbit" width="480" height="480" aria-hidden="true"></canvas>
+        </div>
+      </div>
+
+      <div class="status-strip">
+        <div class="status-card">
+          <div class="k">現在地</div>
+          <div class="v"><span class="badge b-done">✓ 完了</span> M0 プロトタイプ稼働中</div>
+        </div>
+        <div class="status-card">
+          <div class="k">次の主戦場（実装順）</div>
+          <div class="v seq"><span class="m">M1</span><span class="arr">→</span><span class="m">M4</span><span class="arr">→</span><span class="m">M3</span></div>
+        </div>
+        <div class="status-card">
+          <div class="k">永続化</div>
+          <div class="v">localStorage（当面ローカル継続）</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 4本柱 ===== -->
+    <section id="pillars">
+      <div class="sec-head">
+        <span class="sec-eyebrow">Product Principles</span>
+        <h2>4 本柱</h2>
+        <p class="sec-note">出典: <a href="vision.md">vision.md</a></p>
+      </div>
+      <div class="grid grid-2">
+        <div class="card pillar">
+          <span class="pnum" style="background:var(--accent)">1</span>
+          <h3>一人〜少人数の管理に特化</h3>
+          <p>設定・概念を最小限に。導入即日で使える。1 人でも価値があり、人が増えても破綻しない。「管理のための管理」を作らない。</p>
+        </div>
+        <div class="card pillar">
+          <span class="pnum" style="background:var(--accent2)">2</span>
+          <h3>マルチタスクを捌く</h3>
+          <p>複数プロジェクト・複数文脈を同時に見渡す（今日 / 今後 / プロジェクト別 / カレンダー）。「次に何をやるか」を即決できる。</p>
+        </div>
+        <div class="card pillar">
+          <span class="pnum" style="background:var(--p-med)">3</span>
+          <h3>徹底したコミットメントの可視化</h3>
+          <p>タスクを「やること」でなく <b style="color:var(--text)">約束</b>として扱う（誰が・何を・いつまでに）。進捗・猶予・遅延リスクを常時可視化。目的は監視でなく<b style="color:var(--text)">安心</b>。</p>
+        </div>
+        <div class="card pillar">
+          <span class="pnum" style="background:var(--purple)">4</span>
+          <h3>AI との能動的協働 →（北極星）AI 社員のマネジメント</h3>
+          <p>AI を「聞けば答える」から「先回りして整え・提案する」へ。最終形はミッションを与えて自律実行、必要時だけユーザーへ Post。<b style="color:var(--text)">主導権は常に人間</b>。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== ロードマップ ===== -->
+    <section id="roadmap">
+      <div class="sec-head">
+        <span class="sec-eyebrow">Roadmap</span>
+        <h2>ロードマップ（M0–M7）</h2>
+        <p class="sec-note">出典: <a href="roadmap.md">roadmap.md</a></p>
+      </div>
+
+      <div class="rm-note">
+        <span class="ico">ⓘ</span>
+        <div><b>マイルストーン番号は「安定 ID」であり、厳密な実装順ではない</b>（ADR から番号で参照されるため振り直さない）。実際の着手順は下記の並び。とくに <b>構造を人手で検証する M4（コミット可視化）を、AI を乗せる M3 より先</b>に進める（de-risk、<a href="adr/0001-commitment-model.md">ADR-0001</a>）。</div>
+      </div>
+
+      <div class="ring-wrap">
+        <svg width="64" height="64" viewBox="0 0 80 80" aria-label="マイルストーン進捗 1/8">
+          <circle cx="40" cy="40" r="34" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="8"></circle>
+          <circle id="rmRing" cx="40" cy="40" r="34" fill="none" stroke="var(--accent2)" stroke-width="8"
+                  stroke-linecap="round" transform="rotate(-90 40 40)"
+                  stroke-dasharray="213.6" stroke-dashoffset="213.6"></circle>
+        </svg>
+        <div class="ring-txt">
+          <div class="big">1 / 8 完了</div>
+          <div class="sm">M0 のみ完了。設計フェーズ進行中。</div>
+        </div>
+      </div>
+
+      <div class="phase-label">現行フェーズ — ローカル / Electron で完結</div>
+
+      <div class="ms">
+        <div class="ms-id">M0<small>安定ID</small></div>
+        <div>
+          <p class="ms-title">プロトタイプ</p>
+          <p class="ms-goal">触れる ToDo SPA で世界観と基本タスク体験を確立。<code>localStorage</code> 完結。</p>
+        </div>
+        <div class="ms-right"><span class="badge b-done">✓ 完了</span></div>
+      </div>
+
+      <div class="ms">
+        <div class="ms-id">M1<small>安定ID</small></div>
+        <div>
+          <p class="ms-title">基盤整備（Electron 化含む）</p>
+          <p class="ms-goal">同一コードから Web とデスクトップ（Electron）を起動・ビルドできる土台。テスト基盤（Vitest / Playwright）導入。</p>
+          <p class="ms-meta">依存: Q-ARCH-1 ✅ / 4 / 5</p>
+        </div>
+        <div class="ms-right"><span class="badge b-todo">⬜ 次の主戦場</span></div>
+      </div>
+
+      <div class="ms">
+        <div class="ms-id">M4<small>安定ID</small></div>
+        <div>
+          <p class="ms-title">コミットメント可視化 <span style="color:var(--faint);font-weight:600;font-size:12px">（AI 非依存）</span></p>
+          <p class="ms-goal">「約束」とリスクを中心にした体験を AI なしで完成・検証。第一級コミットメント＋段階開示。「危ない約束」が一目で分かる。</p>
+          <p class="ms-meta"><span class="seqflag">実装は M3 より先（構造を人手で検証＝de-risk）</span> ・ 依存: Q-PROD-2 ✅ / 3</p>
+        </div>
+        <div class="ms-right"><span class="badge b-todo">⬜ 着手可</span></div>
+      </div>
+
+      <div class="ms">
+        <div class="ms-id">M5<small>安定ID</small></div>
+        <div>
+          <p class="ms-title">連携・通知・体験強化</p>
+          <p class="ms-goal">外部連携（カレンダー / Slack / GitHub / メール）、通知・繰り返し、検索・コマンドパレット。速度 UX を磨く。</p>
+          <p class="ms-meta">依存: Q-PROD-5 ・ 一部はローカルで実装可</p>
+        </div>
+        <div class="ms-right"><span class="badge b-todo">⬜ 一部可</span></div>
+      </div>
+
+      <div class="phase-label">Web サービス展開の判断後</div>
+
+      <div class="ms">
+        <div class="ms-id">M2<small>安定ID</small></div>
+        <div>
+          <p class="ms-title">データ基盤・マルチユーザー</p>
+          <p class="ms-goal">アカウント・共有・同期。2 アカウントでプロジェクト共有＋担当者割り当て。</p>
+          <p class="ms-meta">依存: Q-ARCH-2（保留）, Q-PROD-4</p>
+        </div>
+        <div class="ms-right"><span class="badge b-pause">⏸ 保留</span></div>
+      </div>
+
+      <div class="ms">
+        <div class="ms-id">M3<small>安定ID</small></div>
+        <div>
+          <p class="ms-title">AI 協働 基盤</p>
+          <p class="ms-goal">エージェント提案の最小形（Triager + Planner / <code>suggest</code>）。M4 で人手検証した約束構造の上に AI が充填・監視を上乗せ。</p>
+          <p class="ms-meta"><span class="seqflag">実装は M4 の後</span> ・ 依存: Q-AI-1（保留）〜6</p>
+        </div>
+        <div class="ms-right"><span class="badge b-pause">⏸ 保留</span></div>
+      </div>
+
+      <div class="phase-label">長期・将来</div>
+
+      <div class="ms">
+        <div class="ms-id">M6<small>安定ID</small></div>
+        <div>
+          <p class="ms-title">モバイル展開</p>
+          <p class="ms-goal">スマホアプリ（Swift ネイティブ or React + Capacitor）。デスクトップとは別系統で判断。</p>
+        </div>
+        <div class="ms-right"><span class="badge b-future">💤 将来</span></div>
+      </div>
+
+      <div class="ms">
+        <div class="ms-id">M7<small>安定ID</small></div>
+        <div>
+          <p class="ms-title">AI 社員のマネジメント <span style="color:var(--purple);font-weight:700;font-size:12px">（北極星）</span></p>
+          <p class="ms-goal">ミッションを与えて AI が自律実行し、判断が要る時だけユーザーへエスカレーション Post。AI 社員もコミットメント可視化の対象。</p>
+          <p class="ms-meta">依存: Q-AI-7〜9, Q-ARCH-2 ・ バックエンド常駐が必須</p>
+        </div>
+        <div class="ms-right"><span class="badge b-future">💤 北極星</span></div>
+      </div>
+    </section>
+
+    <!-- ===== 未決事項 ===== -->
+    <section id="questions">
+      <div class="sec-head">
+        <span class="sec-eyebrow">Open Questions Tracker</span>
+        <h2>未決事項・課題</h2>
+        <p class="sec-note">出典: <a href="open-questions.md">open-questions.md</a>（全 23 件）</p>
+      </div>
+
+      <div class="stats">
+        <div class="stat"><div class="num" style="color:var(--accent2)">3</div><div class="lab"><span class="dot d-done"></span>✅ 決定</div></div>
+        <div class="stat"><div class="num" style="color:var(--p-med)">2</div><div class="lab"><span class="dot d-prog"></span>🟡 暫定方針あり</div></div>
+        <div class="stat"><div class="num" style="color:var(--p-high)">13</div><div class="lab"><span class="dot d-open"></span>🔴 未決</div></div>
+        <div class="stat"><div class="num" style="color:var(--faint)">5</div><div class="lab"><span class="dot d-future"></span>💤 保留（将来）</div></div>
+      </div>
+
+      <div class="phase-label">A. 戦略 / プロダクト</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th class="nowrap">ID</th><th>状態</th><th>論点</th><th>暫定 / 決定</th></tr></thead>
+          <tbody>
+            <tr><td class="qid nowrap">Q-STRAT-1</td><td><span class="badge b-done">✅ 決定</span></td><td>MVP の進め方</td><td>段階拡張（M0 を土台に積む）</td></tr>
+            <tr><td class="qid nowrap">Q-PROD-2</td><td><span class="badge b-done">✅ 決定</span></td><td>コミットメントの表現</td><td>第一級エンティティ化（→ ADR-0001）</td></tr>
+            <tr><td class="qid nowrap">Q-PROD-1</td><td><span class="badge b-open">🔴 未決</span></td><td>North Star 指標と目標値</td><td>期限遵守率 / AI 提案採用率が候補</td></tr>
+            <tr><td class="qid nowrap">Q-PROD-3</td><td><span class="badge b-open">🔴 未決</span></td><td>遅延リスクの算出方法・保存有無</td><td>まずルールベース・派生（提案）</td></tr>
+            <tr><td class="qid nowrap">Q-PROD-4</td><td><span class="badge b-open">🔴 未決</span></td><td>マルチユーザーの権限モデル</td><td>最小 2 ロールから（M2）</td></tr>
+            <tr><td class="qid nowrap">Q-PROD-6</td><td><span class="badge b-open">🔴 未決</span></td><td>多言語対応の要否</td><td>当面 日本語ファースト</td></tr>
+            <tr><td class="qid nowrap">Q-BIZ-1</td><td><span class="badge b-open">🔴 未決</span></td><td>マネタイズ / 課金方針</td><td>未定（認証・課金設計に影響）</td></tr>
+            <tr><td class="qid nowrap">Q-PROD-5</td><td><span class="badge b-future">💤 保留</span></td><td>外部連携の優先順位</td><td>M5 で着手、要優先付け</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="phase-label">B. アーキテクチャ</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th class="nowrap">ID</th><th>状態</th><th>論点</th><th>暫定 / 決定</th></tr></thead>
+          <tbody>
+            <tr><td class="qid nowrap">Q-ARCH-1</td><td><span class="badge b-done">✅ 決定</span></td><td>デスクトップのシェル戦略</td><td>Electron（Tauri 不採用）。モバイルは別系統</td></tr>
+            <tr><td class="qid nowrap">Q-ARCH-2</td><td><span class="badge b-prog">🟡 暫定</span></td><td>データ基盤・同期・認証</td><td>当面ローカル継続。Web 展開時に判断</td></tr>
+            <tr><td class="qid nowrap">Q-ARCH-3</td><td><span class="badge b-open">🔴 未決</span></td><td>オフライン対応の必須度</td><td>当面オフライン前提。Web 展開時に再検討</td></tr>
+            <tr><td class="qid nowrap">Q-ARCH-4</td><td><span class="badge b-open">🔴 未決</span></td><td>フロント内部構成の段階導入</td><td>必要時に段階導入</td></tr>
+            <tr><td class="qid nowrap">Q-ARCH-5</td><td><span class="badge b-open">🔴 未決</span></td><td>モノレポ化のタイミング・粒度</td><td>backend / desktop 追加時に workspaces 化</td></tr>
+            <tr><td class="qid nowrap">Q-ARCH-6</td><td><span class="badge b-future">💤 保留</span></td><td>デスクトップ署名・自動更新・対象 OS</td><td>M5 以降</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="phase-label">C. AI 協働</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th class="nowrap">ID</th><th>状態</th><th>論点</th><th>暫定 / 決定</th></tr></thead>
+          <tbody>
+            <tr><td class="qid nowrap">Q-AI-1</td><td><span class="badge b-prog">🟡 保留</span></td><td>MVP のエージェント範囲・自律度</td><td>提案のみ最小から。当面は保留</td></tr>
+            <tr><td class="qid nowrap">Q-AI-2</td><td><span class="badge b-open">🔴 未決</span></td><td>権限ティアの粒度・既定値</td><td>エージェント×カテゴリ単位、既定 suggest</td></tr>
+            <tr><td class="qid nowrap">Q-AI-3</td><td><span class="badge b-open">🔴 未決</span></td><td>実行場所（キー管理）</td><td>当面ローカル（Electron メイン）。Web 時プロキシ</td></tr>
+            <tr><td class="qid nowrap">Q-AI-4</td><td><span class="badge b-open">🔴 未決</span></td><td>プロバイダ / モデル方針</td><td>Anthropic Claude ＋抽象化層</td></tr>
+            <tr><td class="qid nowrap">Q-AI-5</td><td><span class="badge b-open">🔴 未決</span></td><td>コンテキスト範囲・プライバシー</td><td>最小範囲＋個人情報マスキング</td></tr>
+            <tr><td class="qid nowrap">Q-AI-6</td><td><span class="badge b-open">🔴 未決</span></td><td>コスト管理（上限・課金関係）</td><td>Q-BIZ-1 連動</td></tr>
+            <tr><td class="qid nowrap">Q-AI-7</td><td><span class="badge b-future">💤 保留</span></td><td>「AI 社員」の実行基盤・常駐性</td><td>長期。Web / バックエンド方針に依存</td></tr>
+            <tr><td class="qid nowrap">Q-AI-8</td><td><span class="badge b-future">💤 保留</span></td><td>エスカレーション Post の UX</td><td>長期。エージェント・インボックスを発展</td></tr>
+            <tr><td class="qid nowrap">Q-AI-9</td><td><span class="badge b-future">💤 保留</span></td><td>「AI 社員」のミッション / 権限モデル</td><td>長期。データモデル拡張要</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ===== 決定ログ・ADR ===== -->
+    <section id="decisions">
+      <div class="sec-head">
+        <span class="sec-eyebrow">Decision Log</span>
+        <h2>決定ログ・ADR</h2>
+        <p class="sec-note">出典: <a href="open-questions.md">open-questions.md</a> / <a href="adr/">adr/</a></p>
+      </div>
+
+      <div class="timeline">
+        <div class="tl-item">
+          <div class="tl-date">2026-06-19 · Q-PROD-2</div>
+          <div class="tl-body"><b>コミットメントを第一級エンティティ化</b>（Commitment が複数 Task を束ねる）。<code>status</code> 化。owner / stakeholder / softDue は任意・段階開示で柱①と両立。→ ADR-0001</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-date">2026-06-19 · 方針</div>
+          <div class="tl-body"><b>M4（コミット可視化）と AI 最小形（M3）は分離維持</b>。AI 実装前に構造を人手で検証（de-risk）。最終形は「リッチモデル＋AI 充填＋段階開示」。</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-date">2026-06-19 · ビジョン</div>
+          <div class="tl-body">ミッションに <b>「AI 格差をなくし、AI をより身近にする」</b> を追加。</div>
+        </div>
+        <div class="tl-item minor">
+          <div class="tl-date">2026-06-18 · Q-ARCH-1</div>
+          <div class="tl-body">デスクトップは <b>Electron</b>。Tauri 不採用。モバイルは将来 Swift or React + Capacitor で別系統。</div>
+        </div>
+        <div class="tl-item minor">
+          <div class="tl-date">2026-06-18 · Q-ARCH-2</div>
+          <div class="tl-body"><b>当面ローカル継続</b>。BaaS / 自前 API は Web 展開検討時に判断（マルチユーザー・ホスト型 AI はそれまで保留）。</div>
+        </div>
+        <div class="tl-item minor">
+          <div class="tl-date">2026-06-18 · Q-STRAT-1 / Q-AI-1</div>
+          <div class="tl-body"><b>段階拡張</b>で進める（再設計しない）。<b>AI は当面保留</b>、着手時は提案のみ最小から。pnpm / Node LTS を技術土台に確定。</div>
+        </div>
+      </div>
+
+      <div class="adr">
+        <h3>ADR-0001: コミットメントを第一級エンティティとして表現する</h3>
+        <div class="adr-meta"><span class="badge b-done">承認</span>&nbsp; 2026-06-19 ・ Q-PROD-2 ・ <a href="adr/0001-commitment-model.md">全文を読む</a></div>
+        <p style="margin:0 0 8px;color:var(--muted)">案A（Task 属性拡張）／案B（別エンティティ）／案C（ハイブリッド）を検討し、<b style="color:var(--text)">案B を採用</b>。「一人ではやり切れない規模＝1 約束が複数作業に枝分かれ」を直接体現するため。案A は現状行動への最適化で、プロダクトが拡張しようとする世界を自己否定するため不採用。</p>
+        <ul class="clean">
+          <li><b style="color:var(--text)">両立条件</b>：リッチ項目はスキーマに持つが UI は段階開示・原則任意。単独ユーザーは今と同じ軽さ。</li>
+          <li><b style="color:var(--text)">シーケンス</b>：M4（構造検証・AI 非依存）→ M3（AI 充填）の順。構造を確かめてから AI を乗せる。</li>
+          <li><b style="color:var(--text)">移行</b>：<code>done:boolean</code> → <code>status</code>、<code>tascal.v1</code> → <code>v2</code>（1:1 変換）。</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ===== データモデル ===== -->
+    <section id="datamodel">
+      <div class="sec-head">
+        <span class="sec-eyebrow">Data Model</span>
+        <h2>データモデル</h2>
+        <p class="sec-note">出典: <a href="data-model.md">data-model.md</a>（🟡 提案段階）</p>
+      </div>
+
+      <div class="grid grid-2">
+        <div class="card">
+          <h3>Commitment <span class="badge b-done" style="vertical-align:middle">✅ 第一級</span></h3>
+          <p style="margin-bottom:10px">= 約束。1 つの Commitment が複数 Task を束ねる。</p>
+<pre><span class="c">// owner/stakeholder/softDue は任意・段階開示</span>
+Commitment {
+  id, projectId, title,
+  <span class="nw">status</span>: 'todo'|'doing'|'done'|'blocked',
+  priority,
+  <span class="k">due</span>,           <span class="c">// 確定締切。当面これ1本</span>
+  softDue?,      <span class="c">// 努力目標（任意）</span>
+  ownerId?,      <span class="c">// 担当者（任意・単独=自分）</span>
+  ownerType?,    <span class="c">// 'human'|'ai'（AI 着手時）</span>
+  stakeholder?,  <span class="c">// 約束の相手（任意）</span>
+  source?        <span class="c">// 'manual'|'ai'|'integration'</span>
+  <span class="c">// riskLevel は持たない = 派生算出</span>
+}</pre>
+        </div>
+        <div class="card">
+          <h3>Task</h3>
+          <p style="margin-bottom:10px">= 作業の単位。Commitment にぶら下がる（1:1 最頻、分割時 1:N）。</p>
+<pre>Task {
+  id, <span class="nw">commitmentId</span>,
+  title, notes,
+  <span class="nw">status</span>: 'todo'|'doing'|'done'|'blocked',
+  subs: Subtask[],
+  createdAt, updatedAt
+}
+
+<span class="c">// 既存タスク = Commitment 1件 + Task 1件 に変換</span></pre>
+        </div>
+      </div>
+
+      <div class="callout" style="margin-top:14px">
+        <span class="ico">⚑</span>
+        <div><b style="color:var(--text)">保存と派生の分離（CLAUDE.md 原則）</b>：遅延（late）は <code>status</code> に入れず、<code>due</code> 超過かつ未完を毎回<b style="color:var(--text)">派生算出</b>（当日依存のため保存しない）。締切ラベル・達成率・遅延リスクも <code>selectors</code> 側で計算する。</div>
+      </div>
+    </section>
+
+    <!-- ===== AI協働 ===== -->
+    <section id="ai">
+      <div class="sec-head">
+        <span class="sec-eyebrow">AI Collaboration</span>
+        <h2>AI 協働の設計</h2>
+        <p class="sec-note">出典: <a href="ai-collaboration.md">ai-collaboration.md</a>（🟡 提案 / 当面保留）</p>
+      </div>
+
+      <div class="grid grid-4" style="margin-bottom:16px">
+        <div class="card"><h3 style="font-size:13.5px">能動性</h3><p style="font-size:12.5px">聞かれる前に整える。ただし割り込まず、提案はインボックスにそっと溜める。</p></div>
+        <div class="card"><h3 style="font-size:13.5px">人間が主導</h3><p style="font-size:12.5px">既定は「提案 → 人が承認 → 実行」。自動実行は明示許可の範囲のみ。</p></div>
+        <div class="card"><h3 style="font-size:13.5px">透明性</h3><p style="font-size:12.5px">根拠と実行を ActivityLog に記録。取り消し可能に。</p></div>
+        <div class="card"><h3 style="font-size:13.5px">最小権限・安全第一</h3><p style="font-size:12.5px">破壊的操作は自動化しない。API キーはクライアントに出さない。</p></div>
+      </div>
+
+      <p class="sec-note" style="margin:6px 0 10px">自律度の段階ロードマップ（D0 → D4）</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th class="nowrap">段階</th><th>役割・自律度</th><th>ティア</th><th>ローカル(Electron)</th></tr></thead>
+          <tbody>
+            <tr><td class="qid nowrap">D0 <span style="color:var(--faint)">(M3)</span></td><td>Triager（振り分け案）＋ Planner（サブタスク案）</td><td>suggest</td><td><span class="badge b-done">◎ 成立</span></td></tr>
+            <tr><td class="qid nowrap">D1</td><td>Watcher（遅延警告）＋ Briefer（朝のブリーフィング）</td><td>suggest / 一部 approval</td><td><span class="badge b-done">◎ ほぼ</span></td></tr>
+            <tr><td class="qid nowrap">D2</td><td>低リスク操作（タグ付け等）を承認付き実行</td><td>act_with_approval</td><td><span class="badge b-prog">○</span></td></tr>
+            <tr><td class="qid nowrap">D3</td><td>無害カテゴリのみ自動</td><td>auto（カテゴリ単位）</td><td><span class="badge b-prog">○</span></td></tr>
+            <tr><td class="qid nowrap">D4 <span style="color:var(--purple)">(M7)</span></td><td>AI 社員 — ミッション付与 → 自律実行 → 例外時 Post</td><td>ミッション単位</td><td><span class="badge b-open">△ 要バックエンド常駐</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout star" style="margin-top:16px">
+        <span class="ico">★</span>
+        <div><b style="color:var(--text)">北極星：AI 社員のマネジメント</b>　ユーザーが AI 社員にミッションを与えると自律行動し、エスカレーション・確認・回答が必要なときだけ Post する。AI 社員も<b style="color:var(--text)">コミットメント可視化の対象</b>（柱③）— 人間と AI を同じ「誰が・何を・いつまでに」軸で見る。D0〜D3 はローカルで前進でき、D4 で初めてバックエンド常駐が必須になる。</div>
+      </div>
+    </section>
+
+    <!-- ===== アーキテクチャ ===== -->
+    <section id="architecture">
+      <div class="sec-head">
+        <span class="sec-eyebrow">Architecture</span>
+        <h2>技術アーキテクチャ</h2>
+        <p class="sec-note">出典: <a href="architecture.md">architecture.md</a> / <a href="../CLAUDE.md">CLAUDE.md</a></p>
+      </div>
+      <div class="grid grid-2">
+        <div class="card">
+          <h3><span class="badge b-done">✅ 決定</span>&nbsp; シェル戦略</h3>
+          <p>デスクトップ = <b style="color:var(--text)">Electron</b>（Tauri 不採用）。Web は同じ React 資産。Node メインプロセスを「ローカルの安全な実行層」に使える。モバイルは将来 Swift / Capacitor で別系統。</p>
+        </div>
+        <div class="card">
+          <h3><span class="badge b-prog">🟡 現フェーズ</span>&nbsp; データ基盤</h3>
+          <p>当面ローカル継続（<code>localStorage</code> → 将来ローカル DB）。BaaS / 自前 API は Web 展開検討時に判断。共有・ホスト型 AI はそれまで保留。</p>
+        </div>
+        <div class="card">
+          <h3>確定の技術土台</h3>
+          <p>pnpm（版固定・Corepack）／ Node LTS（.nvmrc）／ Vite + React 18 + TypeScript（strict）／ React Context ＋ selectors ／ 素の CSS + デザイントークン。</p>
+        </div>
+        <div class="card">
+          <h3>テスト・CI・セキュリティ</h3>
+          <p>Vitest（純粋ロジック）＋ Playwright（主要フロー）。CI は frozen-lockfile → build。<b style="color:var(--text)">AI / 外部キーはクライアント・リポジトリに置かない</b>。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== ドキュメント索引 ===== -->
+    <section id="docs">
+      <div class="sec-head">
+        <span class="sec-eyebrow">Source Index</span>
+        <h2>ドキュメント索引</h2>
+        <p class="sec-note">このページの原典。実装前にこれらを読む。</p>
+      </div>
+      <div class="card">
+        <div class="doc-item"><div class="doc-path"><a href="README.md">README.md</a></div><div class="doc-desc">資料一式の入口。読む順番とステータス凡例（✅🟡🔴💤）。</div></div>
+        <div class="doc-item"><div class="doc-path"><a href="vision.md">vision.md</a></div><div class="doc-desc">ビジョン・ミッション・4 本柱・ターゲット・非目標・North Star。</div></div>
+        <div class="doc-item"><div class="doc-path"><a href="product-spec.md">product-spec.md</a></div><div class="doc-desc">機能仕様・ユースケース・アイデアバックログ。</div></div>
+        <div class="doc-item"><div class="doc-path"><a href="data-model.md">data-model.md</a></div><div class="doc-desc">エンティティと関係（Commitment / Task / 派生値 / マイグレーション）。</div></div>
+        <div class="doc-item"><div class="doc-path"><a href="ai-collaboration.md">ai-collaboration.md</a></div><div class="doc-desc">AI 協働の設計思想・役割・段階ロードマップ・北極星。</div></div>
+        <div class="doc-item"><div class="doc-path"><a href="architecture.md">architecture.md</a></div><div class="doc-desc">技術アーキテクチャ（シェル / データ基盤 / モノレポ / テスト）。</div></div>
+        <div class="doc-item"><div class="doc-path"><a href="roadmap.md">roadmap.md</a></div><div class="doc-desc">マイルストーン M0–M7・目標・進捗・依存する決定。</div></div>
+        <div class="doc-item"><div class="doc-path"><a href="open-questions.md">open-questions.md</a></div><div class="doc-desc">未決事項トラッカー（ID 付き）・決定ログ・再開ポイント。</div></div>
+        <div class="doc-item"><div class="doc-path"><a href="adr/0001-commitment-model.md">adr/0001-…md</a></div><div class="doc-desc">ADR-0001：コミットメント第一級エンティティ化の決定記録。</div></div>
+        <div class="doc-item"><div class="doc-path"><a href="proposals/2026-06-19-feature-brushup-proposal.md">proposals/2026-06-19-…md</a></div><div class="doc-desc">機能ブラッシュアップ提案レポート（Top7 提案・整合性診断・出典）。</div></div>
+      </div>
+
+      <div class="foot">
+        このページは <code>docs/</code> 配下の Markdown を人間が把握しやすいよう要約・可視化した自動生成ビューです。正は各 <code>.md</code>。<br>
+        ソース: <code>docs/overview.html</code> ・ 最終更新 2026-06-19。docs を更新したら本ビューも更新します。
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+(function () {
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---- 達成リング（1/8 = 12.5%） ---- */
+  var ring = document.getElementById('rmRing');
+  if (ring) {
+    var C = 213.6, target = C * (1 - 0.125);
+    if (reduce) {
+      ring.style.strokeDashoffset = target;
+    } else {
+      ring.style.transition = 'stroke-dashoffset 0.9s cubic-bezier(.2,.6,.3,1)';
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () { ring.style.strokeDashoffset = target; });
+      });
+    }
+  }
+
+  /* ---- スクロールスパイ（現在セクションを nav でハイライト） ---- */
+  var links = Array.prototype.slice.call(document.querySelectorAll('.nav-btn'));
+  var map = {};
+  links.forEach(function (a) {
+    var id = a.getAttribute('href').slice(1);
+    map[id] = a;
+  });
+  var sections = Array.prototype.slice.call(document.querySelectorAll('main section'));
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) {
+          links.forEach(function (l) { l.classList.remove('is-active'); });
+          var active = map[e.target.id];
+          if (active) active.classList.add('is-active');
+        }
+      });
+    }, { rootMargin: '-20% 0px -70% 0px', threshold: 0 });
+    sections.forEach(function (s) { io.observe(s); });
+  }
+
+  /* ---- 軌道マーク（タスクが中心に集まるモチーフ / DESIGN.md ロゴ） ---- */
+  var cv = document.getElementById('orbit');
+  if (cv && cv.getContext) {
+    var ctx = cv.getContext('2d');
+    var W = cv.width, H = cv.height, cx = W / 2, cy = H / 2;
+    var sats = [
+      { r: 150, col: '#5b8def', size: 17, a: 0,         spd: 0.30 },
+      { r: 112, col: '#42d3a8', size: 14, a: 2.1,       spd: -0.46 },
+      { r: 186, col: '#f0b95b', size: 12, a: 4.0,       spd: 0.22 }
+    ];
+    function draw(t) {
+      ctx.clearRect(0, 0, W, H);
+      /* 薄いリング */
+      ctx.strokeStyle = 'rgba(255,255,255,.06)';
+      ctx.lineWidth = 2;
+      [112, 150, 186].forEach(function (rr) {
+        ctx.beginPath(); ctx.arc(cx, cy, rr, 0, Math.PI * 2); ctx.stroke();
+      });
+      /* 衛星と中心への線 */
+      sats.forEach(function (s) {
+        var ang = s.a + (reduce ? 0 : t * 0.001 * s.spd);
+        var x = cx + Math.cos(ang) * s.r;
+        var y = cy + Math.sin(ang) * s.r;
+        ctx.strokeStyle = 'rgba(255,255,255,.05)';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(x, y); ctx.stroke();
+        ctx.fillStyle = s.col;
+        ctx.beginPath(); ctx.arc(x, y, s.size, 0, Math.PI * 2); ctx.fill();
+      });
+      /* 中心の白丸 */
+      ctx.fillStyle = '#eef1f7';
+      ctx.beginPath(); ctx.arc(cx, cy, 30, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#0c1016';
+      ctx.beginPath(); ctx.arc(cx, cy, 11, 0, Math.PI * 2); ctx.fill();
+    }
+    if (reduce) {
+      draw(0);
+    } else {
+      var start = null;
+      (function loop(ts) {
+        if (start === null) start = ts;
+        draw(ts - start);
+        requestAnimationFrame(loop);
+      })(0);
+    }
+  }
+})();
+</script>
+</div>
+</body>
+</html>

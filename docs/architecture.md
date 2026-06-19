@@ -17,8 +17,8 @@
                 └───────▲───────────────▲───────────────▲───────┘
                         │               │               │
               ┌─────────┴───┐  ┌────────┴────────┐  ┌───┴──────────┐
-              │  Web (Vite) │  │ Desktop (Tauri) │  │ Mobile 💤     │
-              │  ブラウザ     │  │ mac/win/linux   │  │ (Tauri 2 等)  │
+              │  Web (Vite) │  │    Electron     │  │ Mobile 💤     │
+              │  ブラウザ     │  │  mac/win/linux  │  │ Swift/Cap.等  │
               └─────────────┘  └─────────────────┘  └──────────────┘
                         │               │
                         └──────┬────────┘
@@ -108,7 +108,7 @@ tascal/
 │   ├── core/        # 共有ドメイン・型・状態・APIクライアント（プラットフォーム非依存）
 │   ├── ui/          # 共有UIコンポーネント & デザインシステム
 │   ├── web/         # Vite Web アプリ
-│   ├── desktop/     # Tauri シェル
+│   ├── desktop/     # Electron シェル
 │   ├── mobile/      # 💤 将来
 │   └── server/      # バックエンド（API / AIプロキシ / ジョブ）
 ├── docs/
@@ -123,7 +123,7 @@ tascal/
 ## 6. ビルド / 配布 / CI
 
 - Web：静的ホスティング（現状の `vite build` 成果物）。
-- Desktop：Tauri の各 OS ビルド（mac/win/linux）。署名・自動更新は要検討（💤 / Q-ARCH-6）。
+- Desktop：Electron の各 OS ビルド（mac/win/linux）。署名・自動更新は要検討（💤 / Q-ARCH-6）。
 - CI：現状の GitHub Actions（`pnpm install --frozen-lockfile` → build）を拡張し、
   テスト・各プラットフォームビルドを段階的に追加。
 
@@ -146,7 +146,7 @@ tascal/
 ---
 
 ## 9. 主要な未決事項（このドキュメント由来）
-- シェル戦略：Tauri / Electron / PWA（**Q-ARCH-1**）
+- ~~シェル戦略：Tauri / Electron / PWA~~ → **Electron に決定**（Tauri 不採用 / PWA は併用候補）（**Q-ARCH-1 ✅**）
 - データ基盤：BaaS / 自前 / ローカルファースト / 当面ローカル（**Q-ARCH-2**）
 - オフライン要件の強さ（**Q-ARCH-3**）
 - フロント内部構成の段階導入（**Q-ARCH-4**）
