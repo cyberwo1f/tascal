@@ -40,26 +40,43 @@ Membership { workspaceId, userId, role: 'owner' | 'member' }
 Project { id, workspaceId🆕, name, color, archived🆕 }
 ```
 
-### Task ✏️（= コミットメント）
+### Commitment 🆕（= 約束。**第一級エンティティ** ✅ Q-PROD-2 / [ADR-0001](./adr/0001-commitment-model.md)）
 ```
-Task {
+Commitment {
   id, workspaceId🆕, projectId,
-  title, notes,
+  title,
   status🆕: 'todo' | 'doing' | 'done' | 'blocked',   // done フラグを状態へ拡張
   priority,
-  due,                       // 確定締切（対外的な約束）
-  softDue🆕?,                // 努力目標（任意） ← Q-PROD-2
-  ownerId🆕?,                // 担当者
-  stakeholder🆕?,            // 約束の相手（自由記述 or 連絡先参照）← Q-PROD-2
-  tags, subs,
+  due,                       // 確定締切（対外的な約束）。当面はこれ1本
+  softDue🆕?,                // 努力目標（任意・段階開示）
+  ownerId🆕?,                // 担当者（任意。単独=自分。将来 AI 社員も）
+  ownerType🆕?: 'human' | 'ai',  // 既定 human。AI 着手フェーズで後方互換に追加
+  stakeholder🆕?,            // 約束の相手（任意。当面 自由記述、構造化は M2 共有時）
+  tags,
   recurrence🆕?,             // 繰り返し規則（後続）
-  riskLevel🆕?,              // 算出 or AI 推定（派生 or 保存）← Q-PROD-3
   createdBy🆕, createdAt🆕, updatedAt🆕,
   source🆕?: 'manual' | 'ai' | 'integration:<name>'  // 由来
+  // riskLevel は持たない = 派生算出（Q-PROD-3、保存しない）
 }
 ```
-- `done: boolean` → `status` へ移行。互換のためマイグレーション要。
-- `riskLevel` を保存するか毎回算出するかは要決定。
+- **1 つの Commitment が複数の Task（作業／文脈）を束ねられる**＝「一人ではやり切れない規模＝1 約束が複数作業に枝分かれ」を表現。
+- 最頻ケース（1 約束＝1 作業）では Commitment と Task を 1:1 で生成し、**1 行として見せる**（段階開示）。約束を分割した時だけ束ねが顕在化する。
+- `owner`/`stakeholder`/`softDue`/`ownerType` は**任意・段階開示**。単独ユーザーは今と同じ軽さで使える（柱①と両立）。
+- 遅延（late）は status に入れず**派生算出**（`due` 超過かつ未完）。
+- フィールドの厳密な配置（Commitment 側 / Task 側）は実装時に詰める。
+
+### Task ✏️（= 作業の単位。Commitment にぶら下がる）
+```
+Task {
+  id, commitmentId🆕,        // 所属する約束（1:1 が最頻、分割時に 1:N）
+  title, notes,
+  status🆕: 'todo' | 'doing' | 'done' | 'blocked',
+  subs: Subtask[],
+  createdAt🆕, updatedAt🆕
+}
+```
+- `done: boolean` → `status` へ移行。互換のためマイグレーション要（`tascal.v1`→`v2`）。
+- 既存タスクは「Commitment 1 件＋Task 1 件（1:1）」へ変換する。
 
 ### Subtask ✏️
 ```
@@ -104,7 +121,7 @@ IntegrationAccount { id, workspaceId, provider, ... }
 - ローカルでも価値が出る順：`status` 化 → リスク（`riskLevel`）→ ダッシュボード用の集計（派生）。
 
 ## 主要な未決事項
-- コミットメントを Task 拡張で表すか別エンティティか（**Q-PROD-2**）
-- リスクの算出方法と保存有無（**Q-PROD-3**）
+- ~~コミットメントを Task 拡張で表すか別エンティティか（**Q-PROD-2**）~~ → ✅ **第一級エンティティ化で決定**（[ADR-0001](./adr/0001-commitment-model.md)）
+- リスクの算出方法と保存有無（**Q-PROD-3**）— 提案は派生算出（保存しない）・初期 2 要素ルール（proposals 参照）
 - マルチユーザー / 永続化の基盤（**Q-ARCH-2**、現フェーズは保留）
 - 「AI 社員」をどうモデル化するか（owner に AI を含める等）（**Q-AI-9**）

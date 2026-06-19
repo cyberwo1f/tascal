@@ -25,9 +25,15 @@
   （ミッションを与え自律実行、必要時にユーザーへエスカレーション Post）（Q-AI-1, [`docs/ai-collaboration.md`](./docs/ai-collaboration.md) §7）。
 - ビジョン・機能は**継続調整中**。新アイデアは [`docs/product-spec.md`](./docs/product-spec.md) の「アイデア・バックログ」へ。
 
+### 確定した方針（2026-06-19）
+- **ミッション追加 = 「AI 格差をなくし、AI をより身近にする」**（[`docs/vision.md`](./docs/vision.md)）。一人ではやり切れない規模をあえて可視化し、AI でマルチタスクを可能にして「コミットメント最大化」へ導く。
+- **Q-PROD-2 確定 = コミットメントは第一級エンティティ**（Commitment が複数 Task を束ねる）＋`status`化。owner/stakeholder/softDue は任意・**段階開示**で柱①（設定最小）と両立（[`docs/adr/0001-commitment-model.md`](./docs/adr/0001-commitment-model.md)）。
+- **M4（コミット可視化）と AI 最小形（M3）は分離維持**。**AI 実装の前に人手で構造を検証する**（de-risk）。最終形は「リッチモデル＋AI 充填＋段階開示」。
+- 今回の機能ブラッシュアップ／追加の全体像 → [`docs/proposals/2026-06-19-feature-brushup-proposal.md`](./docs/proposals/2026-06-19-feature-brushup-proposal.md)。
+
 ### ▶ 次セッションはここから
-[`docs/open-questions.md`](./docs/open-questions.md) の「**次セッションの再開ポイント**」を参照。次の 3 テーマに取り組む：
-①機能の洗い出し（product-spec §9）②コミットメントのモデル確定（Q-PROD-2/3）③「AI 社員」像の具体化（Q-AI-7〜9）。
+[`docs/open-questions.md`](./docs/open-questions.md) の「**次セッションの再開ポイント**」を参照。Q-PROD-2 は ✅ 決定済み（ADR-0001）。
+残る主テーマ：①Q-PROD-3（遅延リスクの算出ルール／保存有無）と `Commitment`/`Task` スキーマの実装詰め ②Q-PROD-1（North Star）③「AI 社員」像の具体化（Q-AI-7〜9）。
 
 ## 確定している技術土台
 
