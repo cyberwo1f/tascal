@@ -442,9 +442,9 @@
     <section id="overview">
       <div class="hero">
         <div class="hero-text">
-          <div class="hero-eyebrow">Product Docs · 2026-06-19 時点</div>
+          <div class="hero-eyebrow">Product Docs · 2026-06-20 時点</div>
           <h1>約束（コミットメント）を可視化し、<br><span class="em">AI と協働して守りきる。</span></h1>
-          <p class="hero-lead">一人経営・少人数チームのためのタスク管理ツール。<code>docs/</code> の仕様・決定・未決事項をここで一望し、「いま何が決まっていて、次に何をやるか」をすぐ掴めるようにする。</p>
+          <p class="hero-lead">膨大なマルチタスクを<b>一人で捌き切る</b>ためのタスク管理ツール（マルチユーザーは非目標・ADR-0003）。<code>docs/</code> の仕様・決定・未決事項をここで一望し、「いま何が決まっていて、次に何をやるか」をすぐ掴めるようにする。</p>
           <div class="mission"><b>ミッション</b>&nbsp;AI 格差をなくし、AI をより身近にする。</div>
         </div>
         <div class="hero-visual">
@@ -478,8 +478,8 @@
       <div class="grid grid-2">
         <div class="card pillar">
           <span class="pnum" style="background:var(--accent)">1</span>
-          <h3>一人〜少人数の管理に特化</h3>
-          <p>設定・概念を最小限に。導入即日で使える。1 人でも価値があり、人が増えても破綻しない。「管理のための管理」を作らない。</p>
+          <h3>一人で捌き切ることに特化</h3>
+          <p>設定・概念を最小限に。視点は常に<b style="color:var(--text)">個人（一人）</b>。他者共有・担当者割り当て・権限は持たない（マルチユーザーは非目標）。一人では捌けない量は AI コラボで捌き切る。</p>
         </div>
         <div class="card pillar">
           <span class="pnum" style="background:var(--accent2)">2</span>
@@ -566,14 +566,14 @@
         <div class="ms-right"><span class="badge b-todo">⬜ 一部可</span></div>
       </div>
 
-      <div class="phase-label">Web サービス展開の判断後</div>
+      <div class="phase-label">同期/Web フェーズの判断後</div>
 
       <div class="ms">
         <div class="ms-id">M2<small>安定ID</small></div>
         <div>
-          <p class="ms-title">データ基盤・マルチユーザー</p>
-          <p class="ms-goal">アカウント・共有・同期。2 アカウントでプロジェクト共有＋担当者割り当て。</p>
-          <p class="ms-meta">依存: Q-ARCH-2（保留）, Q-PROD-4</p>
+          <p class="ms-title">データ基盤・端末間同期（単独）</p>
+          <p class="ms-goal">本人アカウント＋自分のデータの端末間同期。マルチユーザー（他者共有・割り当て・権限）は非目標化／廃止（ADR-0003）。</p>
+          <p class="ms-meta">依存: Q-ARCH-2（保留）。Q-PROD-4 は取り下げ</p>
         </div>
         <div class="ms-right"><span class="badge b-pause">⏸ 保留</span></div>
       </div>
@@ -615,7 +615,7 @@
       <div class="sec-head">
         <span class="sec-eyebrow">Open Questions Tracker</span>
         <h2>未決事項・課題</h2>
-        <p class="sec-note">出典: <a href="open-questions.md">open-questions.md</a>（全 23 件）</p>
+        <p class="sec-note">出典: <a href="open-questions.md">open-questions.md</a>。<b>2026-06-20 整合性レビュー指摘</b>（不整合 a〜g／効果が薄い項目／戦略リスク）と新論点 Q-PROD-8/9/10 を追記済み（詳細は原典の「整合性レビュー指摘」節）。</p>
       </div>
 
       <div class="stats">
@@ -634,7 +634,10 @@
             <tr><td class="qid nowrap">Q-PROD-2</td><td><span class="badge b-done">✅ 決定</span></td><td>コミットメントの表現</td><td>第一級エンティティ化（→ ADR-0001）</td></tr>
             <tr><td class="qid nowrap">Q-PROD-1</td><td><span class="badge b-open">🔴 未決</span></td><td>North Star 指標と目標値</td><td>期限遵守率 / AI 提案採用率が候補</td></tr>
             <tr><td class="qid nowrap">Q-PROD-3</td><td><span class="badge b-open">🔴 未決</span></td><td>遅延リスクの算出方法・保存有無</td><td>まずルールベース・派生（提案）</td></tr>
-            <tr><td class="qid nowrap">Q-PROD-4</td><td><span class="badge b-open">🔴 未決</span></td><td>マルチユーザーの権限モデル</td><td>最小 2 ロールから（M2）</td></tr>
+            <tr><td class="qid nowrap">Q-PROD-8</td><td><span class="badge b-open">🔴 未決</span></td><td>AI 立ち上げ前（〜M4）の差別化の担保</td><td>危ない約束ダッシュボード等を一次差別化に（レビュー2026-06-20）</td></tr>
+            <tr><td class="qid nowrap">Q-PROD-9</td><td><span class="badge b-open">🔴 未決</span></td><td>Commitment.status と Task.status の関係（派生/手動）</td><td>派生を推奨。Q-PROD-3 連動</td></tr>
+            <tr><td class="qid nowrap">Q-PROD-10</td><td><span class="badge b-open">🔴 未決</span></td><td>所有権/担当の粒度（owner / Task / assigneeId の3層）</td><td>AI 委任の割り当て層を確定。Q-AI-9 連動</td></tr>
+            <tr><td class="qid nowrap">Q-PROD-4</td><td><span class="badge b-pause">✖ 取り下げ</span></td><td><s>マルチユーザーの権限モデル</s></td><td>非目標化により取り下げ（ADR-0003）</td></tr>
             <tr><td class="qid nowrap">Q-PROD-6</td><td><span class="badge b-open">🔴 未決</span></td><td>多言語対応の要否</td><td>当面 日本語ファースト</td></tr>
             <tr><td class="qid nowrap">Q-BIZ-1</td><td><span class="badge b-open">🔴 未決</span></td><td>マネタイズ / 課金方針</td><td>未定（認証・課金設計に影響）</td></tr>
             <tr><td class="qid nowrap">Q-PROD-5</td><td><span class="badge b-future">💤 保留</span></td><td>外部連携の優先順位</td><td>M5 で着手、要優先付け</td></tr>
@@ -648,7 +651,7 @@
           <thead><tr><th class="nowrap">ID</th><th>状態</th><th>論点</th><th>暫定 / 決定</th></tr></thead>
           <tbody>
             <tr><td class="qid nowrap">Q-ARCH-1</td><td><span class="badge b-done">✅ 決定</span></td><td>デスクトップのシェル戦略</td><td>Electron（Tauri 不採用）。モバイルは別系統</td></tr>
-            <tr><td class="qid nowrap">Q-ARCH-2</td><td><span class="badge b-prog">🟡 暫定</span></td><td>データ基盤・同期・認証</td><td>当面ローカル継続。Web 展開時に判断</td></tr>
+            <tr><td class="qid nowrap">Q-ARCH-2</td><td><span class="badge b-prog">🟡 暫定</span></td><td>データ基盤・同期・認証（単独前提）</td><td>当面ローカル継続。同期/Web フェーズで判断（他者共有は非目標）</td></tr>
             <tr><td class="qid nowrap">Q-ARCH-3</td><td><span class="badge b-open">🔴 未決</span></td><td>オフライン対応の必須度</td><td>当面オフライン前提。Web 展開時に再検討</td></tr>
             <tr><td class="qid nowrap">Q-ARCH-4</td><td><span class="badge b-open">🔴 未決</span></td><td>フロント内部構成の段階導入</td><td>必要時に段階導入</td></tr>
             <tr><td class="qid nowrap">Q-ARCH-5</td><td><span class="badge b-open">🔴 未決</span></td><td>モノレポ化のタイミング・粒度</td><td>backend / desktop 追加時に workspaces 化</td></tr>
@@ -686,6 +689,14 @@
 
       <div class="timeline">
         <div class="tl-item">
+          <div class="tl-date">2026-06-20 · ビジョン / ADR-0003</div>
+          <div class="tl-body"><b>「一人で捌き切る」ことに特化へ再調整</b>。柱①「一人〜少人数の管理」→「一人で捌き切る」。視点を個人に固定。膨大マルチタスク × AI コラボ × 可視化という核は個人視点で完結するため。</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-date">2026-06-20 · Q-PROD-4 / 方針</div>
+          <div class="tl-body"><b>マルチユーザー管理（他者共有・担当者割り当て・権限）を非目標化／廃止</b>（Q-PROD-4 取り下げ）。M2 は「データ基盤・<b>端末間同期（単独）</b>」へ再定義。<b>AI への委任（owner=AI）は将来必要として保持</b>（柱④・M7）。</div>
+        </div>
+        <div class="tl-item">
           <div class="tl-date">2026-06-19 · Q-PROD-2</div>
           <div class="tl-body"><b>コミットメントを第一級エンティティ化</b>（Commitment が複数 Task を束ねる）。<code>status</code> 化。owner / stakeholder / softDue は任意・段階開示で柱①と両立。→ ADR-0001</div>
         </div>
@@ -703,12 +714,22 @@
         </div>
         <div class="tl-item minor">
           <div class="tl-date">2026-06-18 · Q-ARCH-2</div>
-          <div class="tl-body"><b>当面ローカル継続</b>。BaaS / 自前 API は Web 展開検討時に判断（マルチユーザー・ホスト型 AI はそれまで保留）。</div>
+          <div class="tl-body"><b>当面ローカル継続</b>。BaaS / 自前 API は同期/Web フェーズで判断（単独の端末間同期・ホスト型 AI はそれまで保留。他者共有は非目標）。</div>
         </div>
         <div class="tl-item minor">
           <div class="tl-date">2026-06-18 · Q-STRAT-1 / Q-AI-1</div>
           <div class="tl-body"><b>段階拡張</b>で進める（再設計しない）。<b>AI は当面保留</b>、着手時は提案のみ最小から。pnpm / Node LTS を技術土台に確定。</div>
         </div>
+      </div>
+
+      <div class="adr">
+        <h3>ADR-0003: 「一人で捌き切る」ことに特化し、マルチユーザー（他者共有）を非目標化する</h3>
+        <div class="adr-meta"><span class="badge b-done">承認</span>&nbsp; 2026-06-20 ・ Q-PROD-4 取り下げ ・ <a href="adr/0003-single-person-focus.md">全文を読む</a></div>
+        <p style="margin:0 0 8px;color:var(--muted)">ターゲットと柱①を<b style="color:var(--text)">「一人で捌き切る」</b>へ再定義。他者（人間）との共有・担当者割り当て・権限ロール（マルチユーザー管理）を<b style="color:var(--text)">非目標化／廃止</b>。現時点で必要性が弱く、柱①（設定最小）と恒常的に緊張するため。規模は AI コラボで補う。</p>
+        <ul class="clean">
+          <li><b style="color:var(--text)">再定義</b>：M2 =「データ基盤・端末間同期（単独ユーザー）」。本人アカウント＋自分のデータ同期のみ。Workspace/Membership は廃止。</li>
+          <li><b style="color:var(--text)">保持</b>：<code>stakeholder</code>（外部の約束先・自由記述）と <b style="color:var(--text)">AI への委任</b>（owner=AI / <code>ownerType:'ai'</code>）＝柱④・北極星。人間同士の割り当てのみ廃止。</li>
+        </ul>
       </div>
 
       <div class="adr">
@@ -742,9 +763,9 @@ Commitment {
   priority,
   <span class="k">due</span>,           <span class="c">// 確定締切。当面これ1本</span>
   softDue?,      <span class="c">// 努力目標（任意）</span>
-  ownerId?,      <span class="c">// 担当者（任意・単独=自分）</span>
-  ownerType?,    <span class="c">// 'human'|'ai'（AI 着手時）</span>
-  stakeholder?,  <span class="c">// 約束の相手（任意）</span>
+  ownerId?,      <span class="c">// owner（任意・単独=自分。将来 AI も）</span>
+  ownerType?,    <span class="c">// 'human'|'ai'（AI 委任用）</span>
+  stakeholder?,  <span class="c">// 約束の相手＝外部の宛先（任意）</span>
   source?        <span class="c">// 'manual'|'ai'|'integration'</span>
   <span class="c">// riskLevel は持たない = 派生算出</span>
 }</pre>
@@ -819,7 +840,7 @@ Commitment {
         </div>
         <div class="card">
           <h3><span class="badge b-prog">🟡 現フェーズ</span>&nbsp; データ基盤</h3>
-          <p>当面ローカル継続（<code>localStorage</code> → 将来ローカル DB）。BaaS / 自前 API は Web 展開検討時に判断。共有・ホスト型 AI はそれまで保留。</p>
+          <p>当面ローカル継続（<code>localStorage</code> → 将来ローカル DB）。BaaS / 自前 API は同期/Web フェーズで判断。単独の端末間同期・ホスト型 AI はそれまで保留（他者共有は非目標）。</p>
         </div>
         <div class="card">
           <h3>確定の技術土台</h3>
